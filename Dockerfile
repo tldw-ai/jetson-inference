@@ -21,13 +21,13 @@
 # Build this Dockerfile by running the following commands:
 #
 #     $ cd /path/to/your/jetson-inference
-#     $ docker/build.sh
+#     $ docker/build.sh dustynv/l4t-pytorch:r36.2.0 
 #
 # Also you should set your docker default-runtime to nvidia:
 #     https://github.com/dusty-nv/jetson-containers#docker-default-runtime
 #
 
-ARG BASE_IMAGE=nvcr.io/nvidia/l4t-pytorch:r32.4.3-pth1.6-py3
+ARG BASE_IMAGE=dustynv/l4t-pytorch:r36.2.0 
 FROM ${BASE_IMAGE}
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -35,7 +35,7 @@ ENV SHELL /bin/bash
 
 WORKDIR /jetson-inference
 
-  
+
 #
 # install development packages
 #
@@ -43,22 +43,22 @@ RUN add-apt-repository --remove "deb https://apt.kitware.com/ubuntu/ $(lsb_relea
     apt-get update && \
     apt-get purge -y '*opencv*' || echo "existing OpenCV installation not found" && \
     apt-get install -y --no-install-recommends \
-            cmake \
-		  nano \
-		  mesa-utils \
-		  lsb-release \
-		  gstreamer1.0-tools \
-		  gstreamer1.0-libav \
-		  gstreamer1.0-rtsp \
-		  gstreamer1.0-plugins-good \
-		  gstreamer1.0-plugins-bad \
-		  gstreamer1.0-plugins-ugly \
-		  libgstreamer-plugins-base1.0-dev \
-		  libgstreamer-plugins-good1.0-dev \
-		  libgstreamer-plugins-bad1.0-dev && \
+    cmake \
+    nano \
+    mesa-utils \
+    lsb-release \
+    gstreamer1.0-tools \
+    gstreamer1.0-libav \
+    gstreamer1.0-rtsp \
+    gstreamer1.0-plugins-good \
+    gstreamer1.0-plugins-bad \
+    gstreamer1.0-plugins-ugly \
+    libgstreamer-plugins-base1.0-dev \
+    libgstreamer-plugins-good1.0-dev \
+    libgstreamer-plugins-bad1.0-dev && \
     if [ `lsb_release --codename --short` != 'bionic' ]; then \
     apt-get install -y --no-install-recommends \
-		  gstreamer1.0-plugins-rtp; \
+    gstreamer1.0-plugins-rtp; \
     else echo "skipping packages unavailable for Ubuntu 18.04"; fi \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
@@ -81,8 +81,8 @@ RUN pip3 install --no-cache-dir --verbose --upgrade Cython && \
     pip3 install --no-cache-dir --verbose -r /tmp/pytorch_ssd_requirements.txt && \
     pip3 install --no-cache-dir --verbose -r /tmp/flask_requirements.txt && \
     pip3 install --no-cache-dir --verbose -r /tmp/dash_requirements.txt
-    
-    
+
+
 # 
 # install OpenCV (with CUDA)
 #
@@ -92,7 +92,7 @@ ARG OPENCV_DEB=OpenCV-4.5.0-aarch64.tar.gz
 COPY docker/containers/scripts/opencv_install.sh /tmp/opencv_install.sh
 RUN cd /tmp && ./opencv_install.sh ${OPENCV_URL} ${OPENCV_DEB}
 
-  
+
 #
 # copy source
 #
@@ -123,7 +123,7 @@ RUN mkdir docs && \
     /bin/bash -O extglob -c "cd /jetson-inference/build; rm -rf -v !($(uname -m)|download-models.*)" && \
     rm -rf /var/lib/apt/lists/* \
     && apt-get clean
-    
+
 # build out-of-tree samples
 RUN cd examples/my-recognition && \
     mkdir build && \
